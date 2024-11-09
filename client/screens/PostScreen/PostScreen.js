@@ -35,9 +35,6 @@ export default function PostScreen() {
   const [blockedUsers, setBlockedUsers] = useState([]);
   const [blockedByUsers, setBlockedByUsers] = useState([]);
 
-  const isDarkMode = theme === 'dark'; 
-  const promptColor = isDarkMode ? '#bebebe' : '#303030';
-
   const textInputRef = useRef(null);
 
   const fetchBlockedUsers = async () => {
@@ -400,7 +397,6 @@ export default function PostScreen() {
         </TouchableOpacity>
       </View>
 
-      <Text style={[styles.prompt, {color: promptColor}]}>Prompt: {postData.image.prompt || 'No prompt available'}</Text>
       {postData.description ? (
          <Text style={styles.description}>{postData.description}</Text>
       ) : null}

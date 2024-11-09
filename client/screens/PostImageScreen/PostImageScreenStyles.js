@@ -21,12 +21,6 @@ export const getPostImageScreenStyles = (currentTheme) => StyleSheet.create({
         resizeMode: 'cover',
         marginTop: 33,
       },
-      promptText: {
-        fontSize: 15.5,
-        color: currentTheme.secondaryTextColor,
-        marginBottom: 12,
-        fontStyle: 'italic',
-      },
       input: {
         height: 40,
         borderColor: currentTheme.borderColor,

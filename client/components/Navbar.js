@@ -56,7 +56,7 @@ export default function Navbar() {
             onPress={() => handleNavigation('SearchScreen')}>
             <Icon name="search" style={[styles.navIcon, { color: currentTheme.iconColor }]} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleNavigation('TextPromptScreen')}>
+          <TouchableOpacity onPress={() => handleNavigation('UploadScreen')}>
             <Icon name="plus" style={[styles.navIcon, { color: currentTheme.iconColor }]} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleNavigation('NotificationScreen')}>

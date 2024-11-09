@@ -17,6 +17,7 @@ import ChangePasswordScreen from './ChangePasswordScreen/ChangePasswordScreen';
 import PostImageScreen from './PostImageScreen/PostImageScreen';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import BlockedUsersScreen from './BlockedUsersScreen/BlockedUsersScreen';
+import UploadScreen from './UploadScreen/UploadScreen';
 
 export {
   TextPromptScreen,
@@ -38,4 +39,5 @@ export {
   PostImageScreen,
   SettingsScreen,
   BlockedUsersScreen,
+  UploadScreen,
 };

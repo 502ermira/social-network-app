@@ -74,6 +74,7 @@ function AppNavigator() {
                 <Stack.Screen name="PostImageScreen" component={Screens.PostImageScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="SettingsScreen" component={Screens.SettingsScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="BlockedUsersScreen" component={Screens.BlockedUsersScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="UploadScreen" component={Screens.UploadScreen} options={{ headerShown: false }}/>
             </Stack.Navigator>
         </>
     );

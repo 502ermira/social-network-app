@@ -10,7 +10,7 @@ export const getUploadScreenStyles = (theme) => StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: theme.primaryColor,
+    color: theme.textColor,
     marginBottom: 20,
   },
   iconContainer: {
@@ -20,7 +20,7 @@ export const getUploadScreenStyles = (theme) => StyleSheet.create({
   iconButton: {
     marginHorizontal: 20,
     padding: 10,
-    backgroundColor: theme.secondaryColor,
+    backgroundColor: theme.textColor,
     borderRadius: 50,
   },
   imagePreview: {

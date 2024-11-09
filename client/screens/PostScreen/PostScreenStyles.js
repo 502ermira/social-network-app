@@ -56,18 +56,11 @@ export const getPostScreenStyles = (currentTheme) => StyleSheet.create({
     aspectRatio: 1,
     resizeMode: 'contain',
   },
-  prompt: {
-    fontStyle: 'italic',
-    marginBottom: 2,
-    fontSize: 15,
-    paddingLeft: 16,
-  },
   description: {
     fontWeight: '600',
     fontSize: 15.5,
     color: currentTheme.secondaryTextColor,
     paddingLeft: 16,
-    marginTop: 6,
   },
   date: {
     color: '#888',

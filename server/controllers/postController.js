@@ -221,21 +221,15 @@ exports.postImage = async (req, res) => {
       return res.status(401).json({ error: 'User not found' });
     }
 
-    let existingImage = await Image.findOne({ image: image.url });
+    const newImage = new Image({
+      image,
+      user: user._id,
+    });
 
-    if (!existingImage) {
-      existingImage = new Image({
-        prompt: image.prompt,
-        image: image.url,
-        embedding: image.embedding, 
-        user: user._id,
-      });
-
-      await existingImage.save();
-    }
+    await newImage.save();
 
     const newPost = new Post({
-      image: existingImage._id,
+      image: newImage._id,
       description,
       user: user._id,
     });
@@ -245,12 +239,12 @@ exports.postImage = async (req, res) => {
     user.posts.push(newPost._id);
     await user.save();
 
-    res.status(200).json({ message: 'Image shared successfully', post: newPost });
+    res.status(200).json({ message: 'Image posted successfully', post: newPost });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
   }
-}; 
+};
 
 exports.getUserPosts = async (req, res) => {
   const { username } = req.params;
