@@ -1,0 +1,45 @@
+import Constants from 'expo-constants';
+
+const { BASE_URL } = Constants.expoConfig.extra;
+
+export const API_ENDPOINTS = {
+  LOGIN: `${BASE_URL}/auth/login`,
+  SIGNUP: `${BASE_URL}/auth/signup`,
+  BLOCKED_USERS: `${BASE_URL}/auth/blocked-users`,
+  EXPLORE_POSTS: (page) => `${BASE_URL}/auth/posts/explore?page=${page}`,
+  UNBLOCK_USER: (username) => `${BASE_URL}/auth/unblock/${username}`,
+  CHANGE_PASSWORD: `${BASE_URL}/auth/change-password`,
+  PROFILE: `${BASE_URL}/auth/profile`,
+  UPDATE_EMAIL: `${BASE_URL}/auth/update-email`,
+  UPDATE_USERNAME: `${BASE_URL}/auth/update-username`,
+  GET_FAVORITES: `${BASE_URL}/api/favorites`,
+  UNFAVORITE: `${BASE_URL}/api/unfavorite`,
+  GET_FOLLOWERS_FOLLOWING: (username) => `${BASE_URL}auth/followers-following/${username}`,
+  FOLLOW_USER: (username) => `${BASE_URL}/auth/follow/${username}`,
+  UNFOLLOW_USER: (username) => `${BASE_URL}/auth/unfollow/${username}`,
+  RELEVANT_POSTS: (page, limit = 20) => `${BASE_URL}/auth/posts/relevant?page=${page}&limit=${limit}`,
+  LIKE_POST: (postId) => `${BASE_URL}/auth/posts/${postId}/like`,
+  REPOST_POST: (postId) => `${BASE_URL}/auth/posts/${postId}/repost`,
+  LIKERS: (postId) => `${BASE_URL}/auth/posts/${postId}/likes`,
+  NOTIFICATIONS: (page) => `${BASE_URL}/auth/notifications?page=${page}&limit=15`,
+  SHARE: `${BASE_URL}/auth/share`,
+  POST_DETAILS: (postId) => `${BASE_URL}/auth/posts/${postId}`,
+  POST_REPOSTS: (postId) => `${BASE_URL}/auth/posts/${postId}/reposts`,
+  POST_COMMENTS: (postId) => `${BASE_URL}/auth/posts/${postId}/comments`,
+  DELETE_POST: (postId) => `${BASE_URL}/auth/posts/${postId}`,
+  USER_SUGGESTIONS: (searchTerm) => `${BASE_URL}/auth/users/suggestions?searchTerm=${searchTerm}`,
+  SEARCH: `${BASE_URL}/auth/search`,
+  SEARCH_USERS: (searchQuery) => `${BASE_URL}/auth/search-users?searchQuery=${searchQuery}`,
+  VALIDATE_USERNAME: `${BASE_URL}/auth/validate-username`,
+  VALIDATE_EMAIL: `${BASE_URL}/auth/validate-email`,
+  GENERATE_IMAGE: `${BASE_URL}/api/generate-image`,
+  USER_PROFILE: (username) => `${BASE_URL}/auth/user/${username}`,
+  USER_POSTS: (username) => `${BASE_URL}/auth/user/${username}/posts`,
+  USER_REPOSTS: (username) => `${BASE_URL}/auth/user/${username}/reposts`,
+  USER_LIKES: (username) => `${BASE_URL}/auth/user/${username}/likes`,
+  FOLLOWERS_FOLLOWING: (username) => `${BASE_URL}/auth/followers-following/${username}`,
+  BLOCK_USER: (username) => `${BASE_URL}/auth/block/${username}`,
+  UNBLOCK_USER: (username) => `${BASE_URL}/auth/unblock/${username}`,
+};
+
+export const SOCKET_URL = Constants.expoConfig.extra.SOCKET_URL;

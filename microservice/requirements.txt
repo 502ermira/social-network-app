@@ -1,0 +1,6 @@
+Flask
+sentence-transformers
+pymongo
+numpy==1.24.3
+python-dotenv
+torch
