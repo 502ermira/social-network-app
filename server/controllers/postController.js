@@ -218,30 +218,44 @@ exports.postImage = async (req, res) => {
     const user = await User.findById(decoded.userId);
 
     if (!user) {
+      console.error("User not found");
       return res.status(401).json({ error: 'User not found' });
     }
 
-    const newImage = new Image({
-      image,
-      user: user._id,
-    });
-
+    const newImage = new Image({ image, user: user._id });
     await newImage.save();
 
-    const newPost = new Post({
-      image: newImage._id,
-      description,
-      user: user._id,
-    });
+    const fetch = (await import('node-fetch')).default;
 
+    const embeddingResponse = await fetch(`${process.env.FLASK_SERVER_URL}/embed-image`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: image }),
+    });
+    
+
+    if (!embeddingResponse.ok) {
+      console.error("Failed to get embedding from Flask service");
+      throw new Error('Failed to get image embedding from Flask service');
+    }
+
+    const embedding = await embeddingResponse.json();
+    console.log("Received embedding from Flask:", embedding);
+
+    newImage.embedding = embedding;
+    await newImage.save();
+    console.log("Image embedding saved in database:", newImage._id);
+
+    const newPost = new Post({ image: newImage._id, description, user: user._id });
     await newPost.save();
 
     user.posts.push(newPost._id);
     await user.save();
 
+    console.log("New post created successfully:", newPost._id);
     res.status(200).json({ message: 'Image posted successfully', post: newPost });
   } catch (err) {
-    console.error(err);
+    console.error("Error posting image:", err);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

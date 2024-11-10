@@ -1,4 +1,3 @@
-import TextPromptScreen from './TextPromptScreen/TextPromptScreen';
 import FavoritesScreen from './FavoritesScreen/FavoritesScreen';
 import LoginScreen from './LoginScreen/LoginScreen';
 import SignupScreen from './SignupScreen/SignupScreen';
@@ -20,7 +19,6 @@ import BlockedUsersScreen from './BlockedUsersScreen/BlockedUsersScreen';
 import UploadScreen from './UploadScreen/UploadScreen';
 
 export {
-  TextPromptScreen,
   FavoritesScreen,
   LoginScreen,
   SignupScreen,

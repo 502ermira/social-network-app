@@ -53,8 +53,7 @@ function AppNavigator() {
         <>
           {shouldShowNavbar() && <Navbar isLoggedIn={isLoggedIn} />}
 
-            <Stack.Navigator initialRouteName="TextPromptScreen">
-                <Stack.Screen name="TextPromptScreen" component={Screens.TextPromptScreen} options={{ headerShown: false }} />
+            <Stack.Navigator initialRouteName="Profile">
                 <Stack.Screen name="Login" component={Screens.LoginScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Signup" component={Screens.SignupScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="FavoritesScreen" component={Screens.FavoritesScreen} options={{ headerShown: false }} />
