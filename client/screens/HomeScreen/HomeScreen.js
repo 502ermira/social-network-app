@@ -156,27 +156,6 @@ export default function HomeScreen() {
     }
   };
 
-  const RenderPromptWithReadMore = ({ text }) => {
-    const [showFullPrompt, setShowFullPrompt] = useState(false);
-
-    return (
-      <View>
-        <Text
-          style={styles.prompt}
-          numberOfLines={showFullPrompt ? undefined : 1} 
-        > {text}
-        </Text>
-        {text.length > 100 && (
-          <TouchableOpacity onPress={() => setShowFullPrompt(!showFullPrompt)}>
-            <Text style={styles.readMoreText}>
-              {showFullPrompt ? 'Show Less' : 'Read More'}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    );
-  };
-
   const RenderDescriptionWithReadMore = ({ text }) => {
     const [showFullDescription, setShowFullDescription] = useState(false);
 
@@ -211,7 +190,6 @@ export default function HomeScreen() {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={styles.postContainer}>
-            <RenderPromptWithReadMore text={item.image.prompt} />
             <Image source={{ uri: item.image.image }} style={styles.image} />
             {item.description ? (
               <RenderDescriptionWithReadMore text={item.description} />

@@ -140,28 +140,58 @@ const getEngagementScore = async (postId) => {
 
 const getRelevanceScore = async (post, userId) => {
   const fetch = (await import('node-fetch')).default;
+  const NUM_RECENT_SEARCHES = 10;
 
-  const userRecentSearch = await Search.findOne({ user: userId }).sort({ timestamp: -1 });
+  const userRecentSearches = await Search.find({ user: userId })
+    .sort({ timestamp: -1 })
+    .limit(NUM_RECENT_SEARCHES);
 
-  if (!userRecentSearch) {
+  if (!userRecentSearches || userRecentSearches.length === 0) {
     console.warn(`No search history found for user ${userId}. Assigning default relevance score.`);
     return 0;
   }
 
-  const query = userRecentSearch ? userRecentSearch.query : post.description;
+  let queryEmbeddings = [];
 
   try {
-    const response = await fetch(`${process.env.FLASK_SERVER_URL}/search-pagination`, {
+    for (const search of userRecentSearches) {
+      const embedResponse = await fetch(`${process.env.FLASK_SERVER_URL}/embed-text`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: search.query })
+      });
+
+      if (!embedResponse.ok) {
+        throw new Error('Failed to fetch embedding for the search query');
+      }
+
+      const queryEmbedding = await embedResponse.json();
+      queryEmbeddings.push(queryEmbedding);
+    }
+  } catch (error) {
+    console.error(`Error embedding query: ${error.message}`);
+    return 0;
+  }
+
+  let combinedEmbedding;
+  if (queryEmbeddings.length > 1) {
+    combinedEmbedding = averageEmbeddings(queryEmbeddings);
+  } else {
+    combinedEmbedding = queryEmbeddings[0];
+  }
+
+  try {
+    const searchResponse = await fetch(`${process.env.FLASK_SERVER_URL}/search`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query })
+      body: JSON.stringify({ embedding: combinedEmbedding })
     });
 
-    if (!response.ok) {
+    if (!searchResponse.ok) {
       throw new Error('Failed to fetch relevance score from microservice');
     }
 
-    const searchResults = await response.json();
+    const searchResults = await searchResponse.json();
     const isRelevant = searchResults.results.some(result => result.id === post.image._id.toString());
 
     return isRelevant ? 10 : 0;
@@ -170,11 +200,32 @@ const getRelevanceScore = async (post, userId) => {
     console.error(`Error fetching relevance score: ${error.message}`);
     
     const postDescription = post.description.toLowerCase();
-    const relevanceFallback = query.toLowerCase().split(' ').some(keyword => postDescription.includes(keyword)) ? 5 : 0;
+    const relevanceFallback = userRecentSearches.some(search =>
+      search.query.toLowerCase().split(' ').some(keyword => postDescription.includes(keyword))
+    ) ? 5 : 0;
 
     return relevanceFallback;
   }
 };
+
+function averageEmbeddings(embeddings) {
+  const numEmbeddings = embeddings.length;
+
+  const embeddingLength = embeddings[0].length;
+  const averagedEmbedding = new Array(embeddingLength).fill(0);
+
+  for (const embedding of embeddings) {
+    for (let i = 0; i < embeddingLength; i++) {
+      averagedEmbedding[i] += embedding[i];
+    }
+  }
+
+  for (let i = 0; i < embeddingLength; i++) {
+    averagedEmbedding[i] /= numEmbeddings;
+  }
+
+  return averagedEmbedding;
+}
 
 exports.deletePost = async (req, res) => {
   const { postId } = req.params;
