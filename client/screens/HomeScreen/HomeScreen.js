@@ -18,6 +18,7 @@ export default function HomeScreen() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMorePosts, setHasMorePosts] = useState(true);
   const [page, setPage] = useState(1);
+  const limit = 20; 
   const { token, username } = useContext(UserContext);
   const { currentTheme, theme } = useContext(ThemeContext);
   const styles = getHomeScreenStyles(currentTheme);
@@ -34,7 +35,7 @@ export default function HomeScreen() {
     if (!hasMorePosts && page > 1) return;
     try {
       if (page === 1) setIsLoading(true);
-      const response = await axios.get(API_ENDPOINTS.RELEVANT_POSTS(page), {
+      const response = await axios.get(API_ENDPOINTS.RELEVANT_POSTS(page, limit), {
         headers: {
           Authorization: token,
         },
@@ -48,7 +49,7 @@ export default function HomeScreen() {
         setPosts(prevPosts => (page === 1 ? newPosts : [...prevPosts, ...newPosts]));
       }
 
-      if (newPosts.length < 10) setHasMorePosts(false);
+      if (newPosts.length < limit) setHasMorePosts(false);
       
       setPage(page + 1);
     } catch (error) {

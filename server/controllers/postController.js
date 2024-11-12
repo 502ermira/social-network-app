@@ -31,7 +31,7 @@ exports.getRelevantPosts = async (req, res) => {
       .populate('image')
       .sort({ sharedAt: -1 })
       .skip(skip)
-      .limit(limit / 2); 
+      .limit(Math.ceil(limit / 2));
 
     const additionalPosts = await Post.find({
       user: { $nin: followedUserIds.concat(blockedUserIds) }
@@ -40,7 +40,7 @@ exports.getRelevantPosts = async (req, res) => {
       .populate('image')
       .sort({ sharedAt: -1 })
       .skip(skip)
-      .limit(limit / 2); 
+      .limit(Math.floor(limit / 2));
 
     const allPosts = [...followedPosts, ...additionalPosts];
 
@@ -286,15 +286,37 @@ exports.postImage = async (req, res) => {
       throw new Error('Failed to get image embedding from Flask service');
     }
 
-    const embedding = await embeddingResponse.json();
-    console.log("Received embedding from Flask:", embedding);
+    const imageEmbedding = await embeddingResponse.json();
+    console.log("Received image embedding from Flask:", imageEmbedding);
 
-    if (!Array.isArray(embedding) || embedding.length === 0) {
-      console.error("Received invalid or empty embedding from Flask");
-      return res.status(500).json({ error: 'Invalid embedding received' });
+    if (!Array.isArray(imageEmbedding) || imageEmbedding.length === 0) {
+      console.error("Received invalid or empty image embedding from Flask");
+      return res.status(500).json({ error: 'Invalid image embedding received' });
     }
 
-    const newImage = new Image({ image, embedding, user: user._id });
+    let descriptionEmbedding = null;
+    if (description) {
+      const descriptionEmbeddingResponse = await fetch(`${process.env.FLASK_SERVER_URL}/embed-text`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: description }),
+      });
+
+      if (descriptionEmbeddingResponse.ok) {
+        descriptionEmbedding = await descriptionEmbeddingResponse.json();
+        console.log("Received description embedding from Flask:", descriptionEmbedding);
+      } else {
+        console.error("Failed to get description embedding from Flask service");
+      }
+    }
+
+    const newImage = new Image({
+      image,
+      embedding: imageEmbedding,
+      user: user._id,
+      descriptionEmbedding: descriptionEmbedding || null,
+    });
+
     await newImage.save();
     console.log("Image with embedding saved in database:", newImage._id);
 

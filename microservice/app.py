@@ -82,37 +82,42 @@ def embed_text():
 @app.route('/search', methods=['POST'])
 def search():
     query_embedding = request.json.get('embedding')
-    
+
     if not query_embedding:
         return jsonify({'error': 'No query embedding provided'}), 400
 
     # Convert the query embedding to a numpy array
     query_embedding = np.array(query_embedding, dtype=np.float32)
 
-    # Check if the query embedding is valid (non-empty)
     if query_embedding.size == 0:
         return jsonify({'error': 'Query embedding is invalid'}), 400
 
     # Fetch all images and their embeddings from the database
-    image_docs = image_collection.find({}, {'embedding': 1})
+    image_docs = image_collection.find({}, {'embedding': 1, 'descriptionEmbedding': 1})
 
     similarities = []
     for doc in image_docs:
-        # Skip documents without an embedding
         if 'embedding' not in doc:
-            print(f"Document with ID {doc['_id']} is missing 'embedding'")
             continue
 
+        # Get the image embedding
         image_embedding = np.array(doc['embedding'], dtype=np.float32)
 
-        # Skip if the image embedding is empty
-        if image_embedding.size == 0:
-            print(f"Document with ID {doc['_id']} has an empty embedding")
-            continue
+        # Get the description embedding (if available)
+        description_embedding = np.array(doc.get('descriptionEmbedding', []), dtype=np.float32)
 
-        # Calculate cosine similarity
-        similarity_score = calculate_cosine_similarity(query_embedding, image_embedding)
-        similarities.append((doc['_id'], similarity_score))
+        # Calculate similarity with the image embedding
+        image_similarity = calculate_cosine_similarity(query_embedding, image_embedding)
+
+        # Calculate similarity with the description embedding (if available)
+        description_similarity = 0
+        if description_embedding.size > 0:
+            description_similarity = calculate_cosine_similarity(query_embedding, description_embedding)
+
+        # Combine the two similarities
+        combined_similarity = (0.6 * image_similarity) + (0.4 * description_similarity)
+
+        similarities.append((doc['_id'], combined_similarity))
 
     # Sort results by similarity score in descending order
     similarities = sorted(similarities, key=lambda x: x[1], reverse=True)
@@ -196,92 +201,5 @@ def explore_posts():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-# Route to fetch relevant posts for home screen
-@app.route('/home', methods=['GET'])
-def get_relevant_posts():
-    user_id = request.args.get('userId')
-    page = int(request.args.get('page', 1))
-    limit = int(request.args.get('limit', 10))
-    skip = (page - 1) * limit
-
-    try:
-        # Fetch the user
-        user = user_collection.find_one({'_id': ObjectId(user_id)}, {'blockedUsers': 1, 'blockedBy': 1})
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        blocked_user_ids = user['blockedUsers'] + user['blockedBy']
-
-        # Fetch the users this user is following
-        following_cursor = follower_collection.find({'followerId': ObjectId(user_id)}, {'followingId': 1})
-        followed_user_ids = [f['followingId'] for f in following_cursor]
-
-        # Fetch posts from followed users, excluding blocked users
-        followed_posts_cursor = post_collection.find({
-            'user': {'$in': followed_user_ids, '$nin': blocked_user_ids}
-        }).sort('sharedAt', -1).skip(skip).limit(limit // 2)
-        followed_posts = list(followed_posts_cursor)
-
-        # Fetch additional posts from users not followed and not blocked
-        additional_posts_cursor = post_collection.find({
-            'user': {'$nin': followed_user_ids + blocked_user_ids}
-        }).sort('sharedAt', -1).skip(skip).limit(limit // 2)
-        additional_posts = list(additional_posts_cursor)
-
-        # Combine followed and additional posts
-        all_posts = followed_posts + additional_posts
-
-        scored_posts = []
-        for post in all_posts:
-            # Calculate engagement score
-            engagement_score = get_engagement_score(post['_id'])
-
-            # Calculate relevance score if query embedding is provided (this assumes relevance is based on embedding)
-            query_embedding = request.json.get('embedding', None)
-            if query_embedding:
-                post_image = image_collection.find_one({'_id': ObjectId(post['image'])})
-                if post_image:
-                    relevance_score = get_relevance_score(post_image, query_embedding)
-                else:
-                    relevance_score = 0
-            else:
-                relevance_score = 0
-
-            # Calculate recency score (more recent posts score higher)
-            recency_score = (datetime.utcnow() - post['sharedAt']).total_seconds()
-
-            # Check if the user has liked or reposted the post
-            is_liked_by_user, is_reposted_by_user = user_interactions(post['_id'], user_id)
-
-            # Total engagement counts for the post
-            likes_count = like_collection.count_documents({'post': ObjectId(post['_id'])})
-            comments_count = comment_collection.count_documents({'post': ObjectId(post['_id'])})
-            reposts_count = repost_collection.count_documents({'post': ObjectId(post['_id'])})
-
-            # Final score
-            final_score = (engagement_score * 0.3) + (relevance_score * 0.5) - (recency_score * 0.2)
-
-            # Append post data with interaction details and score
-            scored_posts.append({
-                'post': {
-                    **post,
-                    'likes': likes_count,
-                    'comments': comments_count,
-                    'reposts': reposts_count,
-                    'isLikedByUser': is_liked_by_user,
-                    'isRepostedByUser': is_reposted_by_user
-                },
-                'final_score': final_score
-            })
-
-        # Sort posts by final score
-        scored_posts.sort(key=lambda x: x['final_score'], reverse=True)
-
-        # Return the posts sorted by score
-        return jsonify([sp['post'] for sp in scored_posts]), 200
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)

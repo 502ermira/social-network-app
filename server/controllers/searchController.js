@@ -55,7 +55,7 @@ exports.searchUsers = async (req, res) => {
       const searchResponse = await fetch(`${process.env.FLASK_SERVER_URL}/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ embedding }),
+        body: JSON.stringify({ embedding, query_text: query }),
       });
   
       if (!searchResponse.ok) {
