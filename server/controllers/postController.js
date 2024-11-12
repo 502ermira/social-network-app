@@ -245,15 +245,27 @@ exports.deletePost = async (req, res) => {
       return res.status(403).json({ error: 'You can only delete your own posts' });
     }
 
+    const imageId = post.image;
+
     await Comment.deleteMany({ post: postId });
     await Like.deleteMany({ post: postId });
     await Repost.deleteMany({ post: postId });
     await PostView.deleteMany({ post: postId });
     await Notification.deleteMany({ post: postId });
+    
     await User.updateMany({ posts: postId }, { $pull: { posts: postId } });
+
     await Post.findByIdAndDelete(postId);
 
-    res.status(200).json({ message: 'Post and related data deleted successfully' });
+    if (imageId) {
+      await Image.findByIdAndDelete(imageId);
+      await Comment.deleteMany({ post: imageId });
+      await Like.deleteMany({ post: imageId });
+      await Repost.deleteMany({ post: imageId });
+      await Notification.deleteMany({ post: imageId });
+    }
+
+    res.status(200).json({ message: 'Post, image, and all related data deleted successfully' });
   } catch (error) {
     console.error('Error deleting post:', error);
     res.status(500).json({ error: 'Failed to delete post' });
