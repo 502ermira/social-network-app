@@ -40,6 +40,9 @@ export const API_ENDPOINTS = {
   FOLLOWERS_FOLLOWING: (username) => `${BASE_URL}/auth/followers-following/${username}`,
   BLOCK_USER: (username) => `${BASE_URL}/auth/block/${username}`,
   UNBLOCK_USER: (username) => `${BASE_URL}/auth/unblock/${username}`,
+  POST_BOOKMARKS: (postId) => `${BASE_URL}/auth/posts/${postId}/bookmarks`,
+  IS_BOOKMARKED: (postId) => `${BASE_URL}/auth/posts/${postId}/check-bookmark`,
+  BOOKMARK_POST: (postId) => `${BASE_URL}/auth/posts/${postId}/bookmark`,
 };
 
 export const SOCKET_URL = Constants.expoConfig.extra.SOCKET_URL;

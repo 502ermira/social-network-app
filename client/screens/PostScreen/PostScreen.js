@@ -34,6 +34,8 @@ export default function PostScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [blockedUsers, setBlockedUsers] = useState([]);
   const [blockedByUsers, setBlockedByUsers] = useState([]);
+  const [isBookmarkedByUser, setIsBookmarkedByUser] = useState(false);
+  const [bookmarkCount, setBookmarkCount] = useState(0);
 
   const textInputRef = useRef(null);
 
@@ -69,6 +71,19 @@ export default function PostScreen() {
         const reposts = await repostResponse.json();
         const hasReposted = reposts.some(repost => repost.user.username === username);
         setIsRepostedByUser(hasReposted);
+
+      const bookmarkResponse = await fetch(API_ENDPOINTS.POST_BOOKMARKS(postId), {
+        headers: { Authorization: token },
+      });
+      const { bookmarks } = await bookmarkResponse.json();
+      setBookmarkCount(bookmarks);
+
+      const isBookmarkedResponse = await fetch(API_ENDPOINTS.IS_BOOKMARKED(postId), {
+        headers: { Authorization: token },
+      });
+      const { isBookmarked } = await isBookmarkedResponse.json();
+      setIsBookmarkedByUser(isBookmarked);
+
       } else {
         console.error('Failed to fetch post:', data.error);
       }
@@ -274,6 +289,29 @@ export default function PostScreen() {
       !blockedByUsers.includes(comment.user.username)
   );  
 
+  const handleBookmark = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.BOOKMARK_POST(postId), {
+        method: 'POST',
+        headers: { Authorization: token },
+      });
+  
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+  
+      if (response.ok) {
+        const data = JSON.parse(responseText);
+  
+        setBookmarkCount((prevCount) => (isBookmarkedByUser ? prevCount - 1 : prevCount + 1));
+        setIsBookmarkedByUser(!isBookmarkedByUser);
+      } else {
+        console.error('Server error:', responseText);
+      }
+    } catch (error) {
+      console.error('Error bookmarking post:', error);
+    }
+  };
+
   const handleCommentsPress = () => {
     navigation.push('CommentsScreen', { postId: postData._id });
   };
@@ -370,7 +408,7 @@ export default function PostScreen() {
       
       <View style={styles.likesContainer}>
         <TouchableOpacity onPress={handleLikesPress}>
-          <Text style={{color : currentTheme.darkIconColor}}>{postData.likes} {postData.likes === 1 ? 'Like' : 'Likes'}</Text>
+          <Text style={{color : currentTheme.darkIconColor}}>{postData.likes}</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={postData.isLikedByUser ? styles.unlikeButton : styles.likeButton} 
@@ -384,16 +422,26 @@ export default function PostScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleCommentsPress} style={styles.commentButton}>
-          <Text style={{color : currentTheme.darkIconColor}}>{comments.length} {comments.length === 1 ? 'Comment' : 'Comments'}</Text>
+          <Text style={{color : currentTheme.darkIconColor}}>{comments.length}</Text>
           <Icon name="comment-o" style={styles.commentIcon} size={24.5} color={currentTheme.darkIconColor} />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleRepostsPress} style={styles.commentButton}>
-          <Text style={{color : currentTheme.darkIconColor}}>{postData.reposts} {postData.reposts === 1 ? 'Repost' : 'Reposts'}</Text>
+          <Text style={{color : currentTheme.darkIconColor}}>{postData.reposts}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleRepost} style={styles.repostButton}>
           <AntDesign name="retweet" style={styles.commentIcon} size={25.5} color={isRepostedByUser ? currentTheme.violet : currentTheme.darkIconColor}  />
+        </TouchableOpacity>
+
+
+        <TouchableOpacity onPress={handleBookmark} style={styles.bookmarkButton}>
+        <Text style={[styles.bookmarkText, { color: currentTheme.darkIconColor }]}>{bookmarkCount}</Text>
+          <AntDesign
+            name={isBookmarkedByUser ? 'star' : 'staro'}
+            size={25.5}
+            color={isBookmarkedByUser ? '#7049f6' : currentTheme.darkIconColor}
+          />
         </TouchableOpacity>
       </View>
 

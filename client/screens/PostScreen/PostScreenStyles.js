@@ -235,4 +235,14 @@ export const getPostScreenStyles = (currentTheme) => StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  bookmarkButton: {
+    marginLeft:'auto',
+    marginRight:0,
+    flexDirection:'row',
+    alignItems:'center'
+  },
+  bookmarkText: {
+    marginRight:6,
+  }
+
 });

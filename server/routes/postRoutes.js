@@ -18,5 +18,8 @@ router.post('/posts/:postId/repost', authenticateUser, postController.repostPost
 router.get('/posts/:postId/reposts', authenticateUser, postController.getReposts);
 router.get('/user/:username/reposts', authenticateUser, postController.getRepostsByUsername);
 router.get('/user/:username/likes', authenticateUser, postController.getLikedPosts);
+router.post('/posts/:postId/bookmark', authenticateUser, postController.bookmarkPost);
+router.get('/posts/:postId/bookmarks', authenticateUser, postController.getBookmarksNumber);
+router.get('/posts/:postId/check-bookmark', authenticateUser, postController.isPostBookmarked);
 
 module.exports = router;

@@ -8,6 +8,7 @@ const Comment = require('../models/Comment');
 const Search = require('../models/Search');
 const Like = require('../models/Like');
 const Notification = require('../models/Notification');
+const Bookmark = require('../models/Bookmark');
 const { sendNotification } = require('../services/notificationService');
 const jwt = require('jsonwebtoken');
 
@@ -819,5 +820,61 @@ exports.getLikedPosts = async (req, res) => {
   } catch (error) {
     console.error('Error fetching liked posts:', error);
     res.status(500).json({ error: 'Failed to fetch liked posts' });
+  }
+};
+
+exports.bookmarkPost = async (req, res) => {
+  const { authorization } = req.headers;
+
+  try {
+    const { postId } = req.params;
+    const decoded = jwt.verify(authorization, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    const existingBookmark = await Bookmark.findOne({ user: userId, post: postId });
+
+    if (existingBookmark) {
+      await Bookmark.deleteOne({ _id: existingBookmark._id });
+      return res.status(200).json({ message: 'Post unbookmarked' });
+    }
+
+    const newBookmark = new Bookmark({ user: userId, post: postId });
+    await newBookmark.save();
+    return res.status(201).json({ message: 'Post bookmarked' });
+  } catch (error) {
+    console.error('Error bookmarking post:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getBookmarksNumber = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const bookmarkCount = await Bookmark.countDocuments({ post: postId });
+    return res.status(200).json({ bookmarks: bookmarkCount });
+  } catch (error) {
+    console.error('Error fetching bookmarks:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.isPostBookmarked = async (req, res) => {
+  const { authorization } = req.headers;
+
+  try {
+    const { postId } = req.params;
+    const decoded = jwt.verify(authorization, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    const existingBookmark = await Bookmark.findOne({ user: userId, post: postId });
+
+    if (existingBookmark) {
+      return res.status(200).json({ isBookmarked: true });
+    } else {
+      return res.status(200).json({ isBookmarked: false });
+    }
+  } catch (error) {
+    console.error('Error checking bookmark status:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
