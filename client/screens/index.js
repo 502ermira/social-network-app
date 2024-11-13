@@ -17,6 +17,7 @@ import PostImageScreen from './PostImageScreen/PostImageScreen';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import BlockedUsersScreen from './BlockedUsersScreen/BlockedUsersScreen';
 import UploadScreen from './UploadScreen/UploadScreen';
+import LandingScreen from './LandingScreen/LandingScreen'
 
 export {
   FavoritesScreen,
@@ -38,4 +39,5 @@ export {
   SettingsScreen,
   BlockedUsersScreen,
   UploadScreen,
+  LandingScreen,
 };

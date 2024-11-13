@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { UserContext } from '../contexts/UserContext';
 import { ThemeContext } from '../contexts/ThemeContext';
-import logo from '../assets/images/nav-logo.png';
+import logo from '../assets/images/logo.png';
 import styles from './NavbarStyles';
 
 export default function Navbar() {
@@ -29,8 +29,8 @@ export default function Navbar() {
       {!isLoggedIn ? (
         // Navbar for Logged Out Users (Top Navbar)
         <View style={[styles.navbarTopContainer, { backgroundColor: topNavBackground, borderColor: borderColor }]}>
-          <TouchableOpacity onPress={() => handleNavigation('TextPromptScreen')}>
-            <Image source={logo} style={[styles.logo,{ tintColor: tintColor }]} />
+          <TouchableOpacity onPress={() => handleNavigation('LandingScreen')}>
+          <Image source={logo} style={styles.logo} />
           </TouchableOpacity>
           <View style={styles.authContainer}>
             <TouchableOpacity

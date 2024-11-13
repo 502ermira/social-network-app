@@ -26,7 +26,7 @@ export default function Index() {
 
 function AppNavigator() {
   const { isLoggedIn } = useContext(UserContext);
-  const [currentRoute, setCurrentRoute] = useState('TextPromptScreen');
+  const [currentRoute, setCurrentRoute] = useState('LandingScreen');
   const navigation = useNavigation();
 
   useFocusEffect(
@@ -44,7 +44,7 @@ function AppNavigator() {
   );
 
   const shouldShowNavbar = () => {
-      const hiddenScreens = ['PostImageScreen', 'FavoritesScreen'];
+      const hiddenScreens = ['PostImageScreen', 'FavoritesScreen', 'LandingScreen'];
       return !(hiddenScreens.includes(currentRoute) && !isLoggedIn);
   };
 
@@ -53,7 +53,7 @@ function AppNavigator() {
         <>
           {shouldShowNavbar() && <Navbar isLoggedIn={isLoggedIn} />}
 
-            <Stack.Navigator initialRouteName="Profile">
+            <Stack.Navigator initialRouteName="LandingScreen">
                 <Stack.Screen name="Login" component={Screens.LoginScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Signup" component={Screens.SignupScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="FavoritesScreen" component={Screens.FavoritesScreen} options={{ headerShown: false }} />
@@ -74,6 +74,7 @@ function AppNavigator() {
                 <Stack.Screen name="SettingsScreen" component={Screens.SettingsScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="BlockedUsersScreen" component={Screens.BlockedUsersScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="UploadScreen" component={Screens.UploadScreen} options={{ headerShown: false }}/>
+                <Stack.Screen name="LandingScreen" component={Screens.LandingScreen} options={{ headerShown: false }}/>
             </Stack.Navigator>
         </>
     );

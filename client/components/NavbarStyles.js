@@ -17,7 +17,7 @@ export default StyleSheet.create({
     borderBottomWidth: 0.5,
   },
   logo: {
-    width: 92,
+    width: 77,
     height:55,
     marginTop: -11,
   },

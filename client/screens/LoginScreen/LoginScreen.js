@@ -42,7 +42,7 @@ export default function LoginScreen({ navigation, route }) {
         if (redirectTo) {
           navigation.replace(redirectTo, imageParams);
         } else {
-          navigation.replace('TextPromptScreen');
+          navigation.replace('HomeScreen');
         }
       } else {
         setError(data.error);

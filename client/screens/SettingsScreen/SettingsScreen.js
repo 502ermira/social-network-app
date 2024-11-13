@@ -13,7 +13,7 @@ export default function SettingsScreen({ navigation }) {
     handleLogout();
     navigation.reset({
       index: 0,
-      routes: [{ name: 'TextPromptScreen' }],
+      routes: [{ name: 'LandingScreen' }],
     });
   };
 

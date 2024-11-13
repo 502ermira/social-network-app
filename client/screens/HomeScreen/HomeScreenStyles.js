@@ -100,12 +100,6 @@ export const getHomeScreenStyles = (currentTheme) => StyleSheet.create({
   repostIcon : {
     top:-1.5,
   },
-  prompt : {
-    fontSize: 13,
-    color: currentTheme.tertiaryTextColor,
-    fontStyle: 'italic',
-    marginBottom: 5,
-  },
   readMoreText: {
     color: currentTheme.violet,
     fontWeight: 'bold',
