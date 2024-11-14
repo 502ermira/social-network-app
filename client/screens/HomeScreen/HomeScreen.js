@@ -5,6 +5,7 @@ import { API_ENDPOINTS } from '../../config/apiConfig';
 import { UserContext } from '../../contexts/UserContext';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { getHomeScreenStyles } from './HomeScreenStyles.js';
@@ -33,31 +34,55 @@ export default function HomeScreen() {
 
   const fetchPosts = async (page) => {
     if (!hasMorePosts && page > 1) return;
+  
     try {
       if (page === 1) setIsLoading(true);
+  
       const response = await axios.get(API_ENDPOINTS.RELEVANT_POSTS(page, limit), {
         headers: {
           Authorization: token,
         },
       });
-      
+  
       const newPosts = response.data;
-
-      if (newPosts.length === 0 && page === 1) {
+  
+      const updatedPosts = await Promise.all(
+        newPosts.map(async (post) => {
+          const [bookmarkResponse, bookmarkCountResponse] = await Promise.all([
+            axios.get(API_ENDPOINTS.IS_BOOKMARKED(post._id), {
+              headers: { Authorization: token },
+            }),
+            axios.get(API_ENDPOINTS.POST_BOOKMARKS(post._id), {
+              headers: { Authorization: token },
+            }),
+          ]);
+  
+          const { isBookmarked } = bookmarkResponse.data;
+          const { bookmarks: bookmarkCount } = bookmarkCountResponse.data;
+  
+          return {
+            ...post,
+            isBookmarkedByUser: isBookmarked,
+            bookmarkCount: bookmarkCount,
+          };
+        })
+      );
+  
+      if (updatedPosts.length === 0 && page === 1) {
         setPosts([{ message: 'Discover new people to follow!' }]);
       } else {
-        setPosts(prevPosts => (page === 1 ? newPosts : [...prevPosts, ...newPosts]));
+        setPosts(prevPosts => (page === 1 ? updatedPosts : [...prevPosts, ...updatedPosts]));
       }
-
+  
       if (newPosts.length < limit) setHasMorePosts(false);
-      
+  
       setPage(page + 1);
     } catch (error) {
       console.error('Error fetching posts:', error);
     } finally {
       setIsLoading(false);
     }
-};
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -134,6 +159,39 @@ export default function HomeScreen() {
       }
     } catch (error) {
       console.error('Error handling repost:', error);
+    }
+  };
+
+
+  const handleBookmark = async (postId, isBookmarkedByUser) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.BOOKMARK_POST(postId), {
+        method: 'POST',
+        headers: { Authorization: token },
+      });
+  
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+  
+      if (response.ok) {
+        const data = JSON.parse(responseText);
+  
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post._id === postId
+              ? {
+                  ...post,
+                  isBookmarkedByUser: !isBookmarkedByUser,
+                  bookmarkCount: isBookmarkedByUser ? post.bookmarkCount - 1 : post.bookmarkCount + 1,
+                }
+              : post
+          )
+        );
+      } else {
+        console.error('Server error:', responseText);
+      }
+    } catch (error) {
+      console.error('Error bookmarking post:', error);
     }
   };
 
@@ -237,6 +295,17 @@ export default function HomeScreen() {
                     style={[styles.icon]}
                     size={21}
                     color={item.isRepostedByUser ? currentTheme.violet : currentTheme.darkIconColor }
+                  />
+                </TouchableOpacity>
+
+                <Text style={[styles.bookmarkText, { color: currentTheme.darkIconColor }]}>
+                    {item.bookmarkCount || 0} 
+                </Text>
+                <TouchableOpacity onPress={() => handleBookmark(item._id, item.isBookmarkedByUser)} style={styles.bookmarkButton}>
+                  <Ionicons
+                    name={item.isBookmarkedByUser ? 'bookmark' : 'bookmark-outline'}
+                    size={21}
+                    color={item.isBookmarkedByUser ? '#7049f6' : currentTheme.darkIconColor }
                   />
                 </TouchableOpacity>
               </View>

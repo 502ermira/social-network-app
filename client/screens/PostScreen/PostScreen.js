@@ -4,6 +4,8 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { API_ENDPOINTS } from '../../config/apiConfig';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { getPostScreenStyles } from './PostScreenStyles.js';
 import { UserContext } from '../../contexts/UserContext';
 import { ThemeContext } from '../../contexts/ThemeContext';
@@ -72,18 +74,18 @@ export default function PostScreen() {
         const hasReposted = reposts.some(repost => repost.user.username === username);
         setIsRepostedByUser(hasReposted);
 
-      const bookmarkResponse = await fetch(API_ENDPOINTS.POST_BOOKMARKS(postId), {
-        headers: { Authorization: token },
-      });
-      const { bookmarks } = await bookmarkResponse.json();
-      setBookmarkCount(bookmarks);
-
-      const isBookmarkedResponse = await fetch(API_ENDPOINTS.IS_BOOKMARKED(postId), {
-        headers: { Authorization: token },
-      });
-      const { isBookmarked } = await isBookmarkedResponse.json();
-      setIsBookmarkedByUser(isBookmarked);
-
+        const bookmarkResponse = await fetch(API_ENDPOINTS.POST_BOOKMARKS(postId), {
+          headers: { Authorization: token },
+        });
+        const { bookmarks } = await bookmarkResponse.json();
+        setBookmarkCount(bookmarks);
+  
+        const isBookmarkedResponse = await fetch(API_ENDPOINTS.IS_BOOKMARKED(postId), {
+          headers: { Authorization: token },
+        });
+        const { isBookmarked } = await isBookmarkedResponse.json();
+        setIsBookmarkedByUser(isBookmarked);
+  
       } else {
         console.error('Failed to fetch post:', data.error);
       }
@@ -297,7 +299,6 @@ export default function PostScreen() {
       });
   
       const responseText = await response.text();
-      console.log('Raw response:', responseText);
   
       if (response.ok) {
         const data = JSON.parse(responseText);
@@ -399,7 +400,7 @@ export default function PostScreen() {
         </TouchableOpacity>
         {postData.user.username === username && (
             <TouchableOpacity onPress={handleDeletePost}>
-              <AntDesign name="delete" size={22} color="#7049f6" />
+              <Ionicons name="trash-bin-outline" size={23} color={currentTheme.darkIconColor}/>
             </TouchableOpacity>
           )}
       </View>
@@ -415,15 +416,15 @@ export default function PostScreen() {
           onPress={() => handleLike(postId)}
         >
           {postData.isLikedByUser ? (
-            <Icon name="heart" style={styles.likeIcon} size={25} color="#7049f6" />
+            <Icon name="heart" style={styles.likeIcon} size={23} color="#7049f6" />
           ) : (
-            <Icon name="heart-o" style={styles.likeIcon} size={25} color={currentTheme.darkIconColor} />
+            <Icon name="heart-o" style={styles.likeIcon} size={23} color={currentTheme.darkIconColor} />
           )}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleCommentsPress} style={styles.commentButton}>
           <Text style={{color : currentTheme.darkIconColor}}>{comments.length}</Text>
-          <Icon name="comment-o" style={styles.commentIcon} size={24.5} color={currentTheme.darkIconColor} />
+          <Icon name="comment-o" style={styles.commentIcon} size={23} color={currentTheme.darkIconColor} />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleRepostsPress} style={styles.commentButton}>
@@ -431,15 +432,14 @@ export default function PostScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleRepost} style={styles.repostButton}>
-          <AntDesign name="retweet" style={styles.commentIcon} size={25.5} color={isRepostedByUser ? currentTheme.violet : currentTheme.darkIconColor}  />
+          <AntDesign name="retweet" style={styles.commentIcon} size={23} color={isRepostedByUser ? currentTheme.violet : currentTheme.darkIconColor}  />
         </TouchableOpacity>
-
 
         <TouchableOpacity onPress={handleBookmark} style={styles.bookmarkButton}>
         <Text style={[styles.bookmarkText, { color: currentTheme.darkIconColor }]}>{bookmarkCount}</Text>
-          <AntDesign
-            name={isBookmarkedByUser ? 'star' : 'staro'}
-            size={25.5}
+          <Ionicons 
+            name={isBookmarkedByUser ? 'bookmark' : 'bookmark-outline'}
+            size={23} 
             color={isBookmarkedByUser ? '#7049f6' : currentTheme.darkIconColor}
           />
         </TouchableOpacity>
@@ -477,7 +477,7 @@ export default function PostScreen() {
           blurOnSubmit={false}
         />
         <TouchableOpacity style={styles.commentSubmitButton} onPress={handleAddComment}>
-          <Icon name="paper-plane" style={styles.submitIcon} size={27} color={currentTheme.darkIconColor} />
+          <FontAwesome6 name="paper-plane" style={styles.submitIcon} size={25} color={currentTheme.darkIconColor} />
         </TouchableOpacity>
       </View>
       {showSuggestions && (

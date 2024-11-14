@@ -57,8 +57,8 @@ export const getPostScreenStyles = (currentTheme) => StyleSheet.create({
     resizeMode: 'contain',
   },
   description: {
-    fontWeight: '600',
-    fontSize: 15.5,
+    fontWeight: '500',
+    fontSize: 15,
     color: currentTheme.secondaryTextColor,
     paddingLeft: 16,
   },
@@ -71,7 +71,7 @@ export const getPostScreenStyles = (currentTheme) => StyleSheet.create({
   likesContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 4,
+    marginBottom: 4,
     textAlign: 'center',
     paddingHorizontal: 16,
   },
@@ -81,12 +81,12 @@ export const getPostScreenStyles = (currentTheme) => StyleSheet.create({
   likeButton: {
     padding: 9,
     borderRadius: 50,
-    marginLeft: -3,
+    marginLeft: -4,
   },
   unlikeButton: {
     padding: 9,
     borderRadius: 50,
-    marginLeft: -3,
+    marginLeft: -4,
   },
   commentsSection: {
     marginTop: 0,
@@ -129,7 +129,7 @@ export const getPostScreenStyles = (currentTheme) => StyleSheet.create({
     borderColor: currentTheme.borderColor,
     borderWidth: 1,
     borderRadius: 8,
-    padding: 9,
+    padding: 8,
     marginRight: 10,
     fontSize: 14,
     backgroundColor: currentTheme.inputBackground,
@@ -140,8 +140,8 @@ export const getPostScreenStyles = (currentTheme) => StyleSheet.create({
     flexDirection: 'row',
   },
   commentIcon: {
-    marginLeft: 10,
-    marginTop: -3,
+    marginLeft: 6,
+    marginTop: -3.5,
     marginRight:12,
   },
   submitIcon: {
@@ -163,6 +163,15 @@ export const getPostScreenStyles = (currentTheme) => StyleSheet.create({
   },
   repostDate : {
     fontSize: 13.5,
+  },
+  bookmarkButton: {
+    marginLeft:'auto',
+    marginRight:0,
+    flexDirection:'row',
+    alignItems:'center'
+  },
+  bookmarkText: {
+    marginRight:6,
   },
   suggestionItem :{
     padding:7,
@@ -235,14 +244,4 @@ export const getPostScreenStyles = (currentTheme) => StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  bookmarkButton: {
-    marginLeft:'auto',
-    marginRight:0,
-    flexDirection:'row',
-    alignItems:'center'
-  },
-  bookmarkText: {
-    marginRight:6,
-  }
-
 });

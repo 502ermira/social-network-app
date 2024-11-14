@@ -46,14 +46,12 @@ export const getHomeScreenStyles = (currentTheme) => StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 20,
-    marginRight: 10,
-    borderWidth: 1.3,
-    borderColor: '#7049f6',
+    marginRight: 8,
   },
   username: {
     fontSize: 14.8,
     fontWeight: '600',
-    color: currentTheme.violet,
+    color: currentTheme.secondaryTextColor,
   },
   date: {
     fontSize: 11,
@@ -69,6 +67,7 @@ export const getHomeScreenStyles = (currentTheme) => StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 9,
+    marginRight:-6,
   },
   engagementContainer: {
     flexDirection: 'row',
@@ -99,6 +98,14 @@ export const getHomeScreenStyles = (currentTheme) => StyleSheet.create({
   },
   repostIcon : {
     top:-1.5,
+  },
+  bookmarkButton: {
+    flexDirection:'row',
+    alignItems:'center',
+  },
+  bookmarkText: {
+    marginHorizontal:6,
+    color : currentTheme.darkIconColor,
   },
   readMoreText: {
     color: currentTheme.violet,
