@@ -43,6 +43,7 @@ export const API_ENDPOINTS = {
   POST_BOOKMARKS: (postId) => `${BASE_URL}/auth/posts/${postId}/bookmarks`,
   IS_BOOKMARKED: (postId) => `${BASE_URL}/auth/posts/${postId}/check-bookmark`,
   BOOKMARK_POST: (postId) => `${BASE_URL}/auth/posts/${postId}/bookmark`,
+  USER_BOOKMARKS: (username) => `${BASE_URL}/auth/users/${username}/bookmarks`,
 };
 
 export const SOCKET_URL = Constants.expoConfig.extra.SOCKET_URL;

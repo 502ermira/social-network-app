@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, Dimensions, RefreshControl } from 'react-native';
 import { UserContext } from '../../contexts/UserContext.js';
 import { ThemeContext } from '@/contexts/ThemeContext.js';
+import Ionicons from 'react-native-vector-icons/Ionicons'; 
 import CustomHeader from '@/components/CustomHeader.js';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Loader from '@/components/Loader.js';
@@ -20,16 +21,18 @@ export default function ProfileScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
   const [likes, setLikes] = useState([]);
+  const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
   const [routes] = useState([
-    { key: 'posts', title: 'Posts' },
-    { key: 'reposts', title: 'Reposts' },
-    { key: 'likes', title: 'Likes' },
+    { key: 'posts', icon: 'apps-sharp' },
+    { key: 'reposts', icon: 'repeat' },
+    { key: 'likes', icon: 'heart-sharp' },
+    { key: 'bookmarks', icon: 'bookmarks-sharp' }
   ]);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const screenWidth = Dimensions.get('window').width;
-  const numColumns = screenWidth > 600 ? 3 : 2;
-  const imageSize = screenWidth / numColumns - 2.5;
+  const numColumns = screenWidth > 600 ? 3 : 3;
+  const imageSize = screenWidth / numColumns - 1;
 
   const fetchUserData = async () => {
     try {
@@ -70,7 +73,17 @@ export default function ProfileScreen({ navigation }) {
         setLikes(likesData);
       } else {
         console.error('Failed to fetch likes:', likesData.error);
-      }          
+      } 
+      
+      const bookmarksResponse = await fetch(API_ENDPOINTS.USER_BOOKMARKS(loggedInUsername), {
+        headers: { Authorization: token },
+      });
+      const bookmarksData = await bookmarksResponse.json();
+      if (bookmarksResponse.ok) {
+        setBookmarkedPosts(bookmarksData);
+      } else {
+        console.error('Failed to fetch bookmarks:', bookmarksData.error);
+      }
 
       const followResponse = await fetch(API_ENDPOINTS.FOLLOWERS_FOLLOWING(loggedInUsername));
       const followData = await followResponse.json();
@@ -155,6 +168,26 @@ const RepostsRoute = () => (
   </ScrollView>
 );
 
+const BookmarksRoute = () => (
+  <ScrollView contentContainerStyle={styles.tabContent}>
+    {bookmarkedPosts.length > 0 ? (
+      <View style={[styles.previewGrid, { width: screenWidth }]}>
+        {bookmarkedPosts.map((bookmark, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[styles.postContainer, { width: imageSize, height: imageSize }]}
+            onPress={() => navigation.navigate('PostScreen', { postId: bookmark.post._id })}
+          >
+            <Image source={{ uri: bookmark.post.image.image }} style={styles.previewImage} />
+          </TouchableOpacity>
+        ))}
+      </View>
+    ) : (
+      <Text style={styles.noPostsText}>No saved posts available</Text>
+    )}
+  </ScrollView>
+);
+
 const LikesRoute = () => (
   <ScrollView 
     contentContainerStyle={styles.tabContent}
@@ -181,6 +214,7 @@ const LikesRoute = () => (
     posts: PostsRoute,
     reposts: RepostsRoute,
     likes: LikesRoute,
+    bookmarks: BookmarksRoute,
   });
 
   if (contextLoading || loading) {
@@ -239,13 +273,37 @@ const LikesRoute = () => (
             initialLayout={{ width: screenWidth }}
             renderTabBar={props => (
               <TabBar
-                {...props}
-                indicatorStyle={{ backgroundColor: '#7049f6', marginBottom: 1.5 }}
-                style={styles.tabBar}
-                labelStyle={{ color: currentTheme.textColor, fontWeight: '400', fontSize: 13 }}
-              />
-            )}
-          />
+              {...props}
+              indicatorStyle={{ backgroundColor: currentTheme.secondaryTextColor , marginBottom: 1.5, height:1 }}
+              style={styles.tabBar}
+              renderIcon={({ route, focused, color }) => {
+                let iconSize = 19;
+                let iconStyle = {};
+        
+                if (route.key === 'reposts') {
+                  iconSize = 25;
+                  iconStyle = { marginTop: -1.2 }; 
+                }
+                else if (route.key === 'posts') {
+                  iconSize = 21;
+                }
+                else if (route.key === 'likes') {
+                  iconSize = 22;
+                }
+        
+                return (
+                  <View style={iconStyle}>
+                    <Ionicons
+                      name={route.icon}
+                      size={iconSize}
+                      color={focused ? currentTheme.textColor : currentTheme.tertiaryTextColor}
+                    />
+                  </View>
+                );
+              }}
+            />
+          )}
+        />
         </View>
       </ScrollView>
     </>

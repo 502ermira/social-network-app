@@ -21,5 +21,6 @@ router.get('/user/:username/likes', authenticateUser, postController.getLikedPos
 router.post('/posts/:postId/bookmark', authenticateUser, postController.bookmarkPost);
 router.get('/posts/:postId/bookmarks', authenticateUser, postController.getBookmarksNumber);
 router.get('/posts/:postId/check-bookmark', authenticateUser, postController.isPostBookmarked);
+router.get('/users/:username/bookmarks', authenticateUser, postController.getUserBookmarkedPosts);
 
 module.exports = router;

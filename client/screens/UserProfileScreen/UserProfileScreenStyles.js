@@ -58,7 +58,7 @@ export const getUserProfileScreenStyles = (currentTheme) => StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
-    padding: 2.5
+    padding: 1
   },
   previewImage: {
     width: '100%',
@@ -66,9 +66,8 @@ export const getUserProfileScreenStyles = (currentTheme) => StyleSheet.create({
   },
   postContainer: {
     overflow: 'hidden',
-    padding: 2.5,
+    padding: 1,
     justifyContent: 'flex-start',
-    paddingTop:2.5
   },
   followButton: {
     backgroundColor: '#7049f6',
@@ -87,9 +86,9 @@ export const getUserProfileScreenStyles = (currentTheme) => StyleSheet.create({
   tabBar: {
     backgroundColor: currentTheme.backgroundColor,
     marginTop: 13,
-    marginHorizontal: 6,
+    marginHorizontal: 3,
     height: 43,
-    marginBottom:-3,
+    marginBottom:1,
     color: currentTheme.textColor,
   },
   noPostsText : {

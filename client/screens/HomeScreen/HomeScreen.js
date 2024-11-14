@@ -171,7 +171,6 @@ export default function HomeScreen() {
       });
   
       const responseText = await response.text();
-      console.log('Raw response:', responseText);
   
       if (response.ok) {
         const data = JSON.parse(responseText);

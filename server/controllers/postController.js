@@ -878,3 +878,29 @@ exports.isPostBookmarked = async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+exports.getUserBookmarkedPosts = async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const bookmarkedPosts = await Bookmark.find({ user: user._id })
+      .populate({
+        path: 'post',
+        populate: { path: 'image', model: 'Image' },
+      })
+      .sort({ bookmarkedAt: -1 })
+      .exec();
+
+    if (!bookmarkedPosts) {
+      return res.status(404).json({ error: 'No bookmarked posts found' });
+    }
+
+    res.json(bookmarkedPosts);
+  } catch (error) {
+    console.error('Error fetching bookmarked posts:', error);
+    res.status(500).json({ error: 'Failed to fetch bookmarked posts' });
+  }
+};

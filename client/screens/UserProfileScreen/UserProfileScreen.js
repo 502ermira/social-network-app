@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, RefreshControl, Dimensions } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons'; 
 import { UserContext } from '../../contexts/UserContext';
 import { ThemeContext } from '@/contexts/ThemeContext';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -28,13 +29,13 @@ export default function UserProfileScreen() {
   const [index, setIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [routes] = useState([
-    { key: 'posts', title: 'Posts' },
-    { key: 'reposts', title: 'Reposts' },
+     { key: 'posts', icon: 'apps-sharp' },
+     { key: 'reposts', icon: 'repeat' },
   ]);
 
   const screenWidth = Dimensions.get('window').width;
-  const numColumns = screenWidth > 600 ? 3 : 2;
-  const imageSize = screenWidth / numColumns - 2.5;
+  const numColumns = screenWidth > 600 ? 3 : 3;
+  const imageSize = screenWidth / numColumns - 1;
 
   const toggleMenu = () => {
     setIsMenuOpen((prevState) => !prevState);
@@ -303,13 +304,34 @@ export default function UserProfileScreen() {
           initialLayout={{ width: Dimensions.get('window').width }}
           renderTabBar={props => (
             <TabBar
-              {...props}
-              indicatorStyle={{ backgroundColor: '#7049f6', marginBottom:1.5 }}
-              style={styles.tabBar}
-              labelStyle={{ color: currentTheme.textColor, fontWeight: '400', fontSize: 13 }}
-            />
-          )}
-        />
+            {...props}
+            indicatorStyle={{ backgroundColor: currentTheme.secondaryTextColor , marginBottom: 1.5, height:1 }}
+            style={styles.tabBar}
+            renderIcon={({ route, focused, color }) => {
+              let iconSize = 19;
+              let iconStyle = {};
+      
+              if (route.key === 'reposts') {
+                iconSize = 25;
+                iconStyle = { marginTop: -1.2 }; 
+              }
+              else if (route.key === 'posts') {
+                iconSize = 21;
+              }
+      
+              return (
+                <View style={iconStyle}>
+                  <Ionicons
+                    name={route.icon}
+                    size={iconSize}
+                    color={focused ? currentTheme.textColor : currentTheme.tertiaryTextColor}
+                  />
+                </View>
+              );
+            }}
+          />
+        )}
+      />
       </View>
     </ScrollView>
   </>
