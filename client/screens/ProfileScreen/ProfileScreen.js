@@ -21,6 +21,8 @@ export default function ProfileScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
   const [likes, setLikes] = useState([]);
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
   const [routes] = useState([
     { key: 'posts', icon: 'apps-sharp' },
@@ -31,8 +33,8 @@ export default function ProfileScreen({ navigation }) {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const screenWidth = Dimensions.get('window').width;
-  const numColumns = screenWidth > 600 ? 3 : 3;
-  const imageSize = screenWidth / numColumns - 1;
+  const numColumns = screenWidth > 600 ? 3 : 2;
+  const imageSize = screenWidth / numColumns - 10;
 
   const fetchUserData = async () => {
     try {
@@ -41,40 +43,37 @@ export default function ProfileScreen({ navigation }) {
       });
       const data = await response.json();
       setUserData(data);
-    
-      const postsResponse = await fetch(API_ENDPOINTS.USER_POSTS(loggedInUsername),  {
+      
+      const postsResponse = await fetch(API_ENDPOINTS.USER_POSTS(loggedInUsername), {
         headers: { Authorization: token },
       });
       const postsData = await postsResponse.json();
-
       if (postsResponse.ok) {
         setPosts(postsData);
       } else {
         console.error('Failed to fetch posts:', postsData.error);
       }
-
+  
       const repostsResponse = await fetch(API_ENDPOINTS.USER_REPOSTS(loggedInUsername), {
         headers: { Authorization: token },
       });
       const repostsData = await repostsResponse.json();
-
       if (repostsResponse.ok) {
         setReposts(repostsData);
       } else {
         console.error('Failed to fetch reposts:', repostsData.error);
       }
-
+  
       const likesResponse = await fetch(API_ENDPOINTS.USER_LIKES(loggedInUsername), {
         headers: { Authorization: token },
       });
       const likesData = await likesResponse.json();
-      
       if (likesResponse.ok) {
         setLikes(likesData);
       } else {
         console.error('Failed to fetch likes:', likesData.error);
       } 
-      
+  
       const bookmarksResponse = await fetch(API_ENDPOINTS.USER_BOOKMARKS(loggedInUsername), {
         headers: { Authorization: token },
       });
@@ -84,11 +83,19 @@ export default function ProfileScreen({ navigation }) {
       } else {
         console.error('Failed to fetch bookmarks:', bookmarksData.error);
       }
-
-      const followResponse = await fetch(API_ENDPOINTS.FOLLOWERS_FOLLOWING(loggedInUsername));
+  
+      const followResponse = await fetch(API_ENDPOINTS.FOLLOWERS_FOLLOWING(loggedInUsername), {
+        headers: { Authorization: token },
+      });
       const followData = await followResponse.json();
-      setFollowerCount(followData.followers.length);
-      setFollowingCount(followData.following.length);
+      if (followResponse.ok) {
+        setFollowerCount(followData.followers.length);
+        setFollowingCount(followData.following.length);
+        setFollowers(followData.followers);
+        setFollowing(followData.following); 
+      } else {
+        console.error('Failed to fetch followers and following:', followData.error);
+      }
     } catch (err) {
       console.error('Error fetching user data:', err);
     } finally {
@@ -225,7 +232,6 @@ const LikesRoute = () => (
 
   return (
     <>
-      <CustomHeader title={loggedInUsername} screenType="ProfileScreen" />
       <ScrollView 
         contentContainerStyle={styles.scrollContainer}
         style={{ backgroundColor: currentTheme.backgroundColor }}
@@ -240,31 +246,91 @@ const LikesRoute = () => (
         }
       >
         <View style={styles.container}>
-          <View style={styles.profileHeader}>
-            <Image source={{ uri: userData.profilePicture }} style={styles.profileImage} />
-            <View style={styles.profileInfo}>
-              <Text style={styles.fullname}>{userData.fullname}</Text>
-
-              <View style={styles.followInfo}>
-                <TouchableOpacity onPress={navigateToFollowers}>
-                  <Text style={styles.followers}>{followerCount} Followers</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={navigateToFollowing}>
-                  <Text style={styles.following}>{followingCount} Following</Text>
-                </TouchableOpacity>
-              </View>
+        <View style={styles.profileHeader}>
+          <Image source={{ uri: userData.profilePicture }} style={styles.profileImage} />
+          
+          <View style={styles.profileInfoContainer}>
+            <View style={styles.profileInfoInner}>
+              <View style={styles.profileInfoData}>
+                <Text style={styles.fullname}>{userData.fullname}</Text>
+                <Text style={styles.username}>@{userData.username}</Text>
+              </View> 
+        
+              <TouchableOpacity
+                style={styles.followButton}
+                onPress={() => navigation.navigate('EditProfile', { updateUserData: setUserData, onRefreshProfile: handleRefreshProfile })}
+              >
+                <Text style={styles.followButtonText}>Edit Profile</Text>
+              </TouchableOpacity>
             </View>
-          </View>
-          {userData.bio ? (
-         <Text style={styles.bio}>{userData.bio}</Text>
-          ) : null}
+        
+            <View style={styles.followInfo}>
+              <TouchableOpacity>
+                <View style={styles.postsContainer}>
+                  <View style={styles.profileImagesContainer}>
+                   {posts.slice(0, 3).map((post, index) => (
+                     <Image
+                       key={index}
+                       source={{ uri: post.image.image }}
+                       style={styles.roundedProfileImage} 
+                     />
+                   ))}
+                  </View>
+                  <Text style={styles.postsText}>
+                    <Text style={styles.count}>
+                     {userData.postCount}
+                    </Text>
+                    &nbsp;posts</Text>
+                </View>
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={navigateToFollowers}>
+                <View style={styles.followersContainer}>
+                <View style={styles.profileImagesContainer}>
+                    {followers.slice(0, 3).map((follower, index) => (
+                      <Image
+                        key={index}
+                        source={{ uri: follower.followerId.profilePicture }}
+                        style={styles.roundedProfileImage}
+                      />
+                    ))}
+                  </View>
+                  <Text style={styles.followersText}>
+                    <Text style={styles.count}>
+                      {followerCount}
+                    </Text>
+                     &nbsp;followers
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={navigateToFollowing}>
+                <View style={styles.followingContainer}>
+                <View style={styles.profileImagesContainer}>
+                    {following.slice(0, 3).map((user, index) => (
+                      <Image
+                        key={index}
+                        source={{ uri: user.followingId.profilePicture }}
+                        style={styles.roundedProfileImage}
+                      />
+                    ))}
+                  </View>
+                  <Text style={styles.followingText}>
+                    <Text style={styles.count}>
+                    {followingCount}
+                    </Text>
+                     &nbsp;following
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
 
-          <TouchableOpacity
-            style={styles.followButton}
-            onPress={() => navigation.navigate('EditProfile', { updateUserData: setUserData, onRefreshProfile: handleRefreshProfile })}
-          >
-            <Text style={styles.followButtonText}>Edit Profile</Text>
-          </TouchableOpacity>
+          </View>
+        </View>
+
+           {userData.bio ? (
+            <Text style={styles.bio}>{userData.bio}</Text>
+            ) : null}
 
           <TabView
             navigationState={{ index, routes }}

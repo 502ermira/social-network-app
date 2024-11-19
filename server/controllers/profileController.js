@@ -10,21 +10,30 @@ const { bucket } = require('../firebaseAdmin');
 const { Buffer } = require('buffer');
 
 exports.getProfile = async (req, res) => {
-    try {
+  try {
       const user = await User.findById(req.userId)
-        .select('fullname username email profilePicture bio theme');
-  
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-  
-      res.json(user);
+          .select('fullname username email profilePicture bio theme posts');
 
-    } catch (error) {
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+
+      const postCount = user.posts.length;
+
+      res.json({
+          fullname: user.fullname,
+          username: user.username,
+          email: user.email,
+          profilePicture: user.profilePicture,
+          bio: user.bio,
+          theme: user.theme,
+          postCount,
+      });
+  } catch (error) {
       console.error('Error fetching user profile:', error);
       res.status(500).json({ error: 'Failed to fetch user profile' });
-    }
-  };  
+  }
+};
 
   exports.getUserProfileByUsername = async (req, res) => {
     const { username } = req.params;

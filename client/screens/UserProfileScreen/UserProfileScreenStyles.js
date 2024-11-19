@@ -1,10 +1,12 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export const getUserProfileScreenStyles = (currentTheme) => StyleSheet.create({  
   container: {
     flex: 1,
-    backgroundColor: currentTheme.backgroundColor,
-    padding: 0,
+    backgroundColor: currentTheme.inputBackground,
+    paddingTop: 0,
     paddingBottom: 75,
   },
   scrollContainer: {
@@ -16,79 +18,151 @@ export const getUserProfileScreenStyles = (currentTheme) => StyleSheet.create({
     alignItems: 'center',
   },
   profileHeader: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     marginBottom: 7,
-    paddingHorizontal: 20,
-    paddingTop: 16,
   },
   profileImage: {
-    width: 95,
-    height: 95,
-    borderRadius: 50,
-    marginRight: 20,
+    width: width,
+    height: 325,
+    objectFit:'cover'
   },
-  profileInfo: {
-    flex: 1,
+  profileInfoContainer: {
+    borderTopLeftRadius: 26,
+    borderTopRightRadius: 26,
+    overflow: 'hidden',
+    backgroundColor: currentTheme.inputBackground,
+    marginTop: -30,
+    marginHorizontal:-2
+  },
+  profileInfoInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal:25,
+    paddingTop:17,
   },
   fullname: {
-    fontSize: 23,
-    fontWeight: 'bold',
+    fontSize: 19,
+    fontWeight: '500',
     color: currentTheme.textColor,
-    top: 8,
+  },
+  username: {
+    fontSize: 15.5,
+    fontWeight: '400',
+    color: currentTheme.tertiaryTextColor,
+    paddingTop:2,
   },
   bio : {
     paddingHorizontal: 21,
-    fontSize: 15,
-    marginBottom: 4,
+    marginTop: 6,
     color: currentTheme.secondaryTextColor,
+    marginBottom:-5,
   },
+  
   followInfo: {
     flexDirection: 'row',
-    marginTop: 17,
+    marginTop: 20,
+    alignSelf:'center',
+    borderRadius:10,
+    justifyContent:'space-between',
+    width:"100%",
+    paddingHorizontal:24,
   },
-  followers: {
-    marginRight: 10,
+  followersContainer: {
+    backgroundColor: currentTheme.backgroundColor,
+    padding: 10,
+    paddingHorizontal:17,
+    borderRadius: 9,
+    textAlign:'left'
+  },
+
+profileImagesContainer: {
+  flexDirection: 'row',
+},
+roundedProfileImage: {
+  width: 32,
+  height: 32,
+  borderRadius: 15,
+  marginLeft: -7,
+  borderColor:currentTheme.backgroundColor,
+  borderWidth:1,
+  marginRight:0,
+},
+  
+  followersText: {
     color: currentTheme.secondaryTextColor,
+    paddingTop:5,
+    fontSize:14.5,
   },
-  following :{
+  
+  followingContainer: {
+    backgroundColor: currentTheme.backgroundColor,
+    padding: 10,
+    borderRadius: 9,
+    textAlign:'left',
+    paddingHorizontal:17,
+  },
+
+  postsContainer: {
+    backgroundColor: currentTheme.backgroundColor,
+    padding: 10,
+    borderRadius: 9,
+    textAlign:'left',
+    paddingHorizontal:17,
+  },
+  
+  followingText: {
     color: currentTheme.secondaryTextColor,
+    paddingTop:5,
+    fontSize:14.5,
   },
+
+  postsText: {
+    color: currentTheme.secondaryTextColor,
+    paddingTop:5,
+    fontSize:14.5,
+  },
+
+  count: {
+    fontWeight:'bold',
+    fontSize:14.5,
+  },
+
   previewGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
-    padding: 1
+    padding: 10,
   },
   previewImage: {
     width: '100%',
     height: '100%',
+    borderRadius:10,
   },
   postContainer: {
     overflow: 'hidden',
-    padding: 1,
+    padding: 4,
     justifyContent: 'flex-start',
   },
   followButton: {
     backgroundColor: '#7049f6',
-    paddingVertical: 9,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginTop: 6,
-    marginHorizontal: 20,
-    marginBottom: -11,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 50,
   },
   followButtonText: {
     color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: '500',
+    fontSize:15,
   },
   tabBar: {
-    backgroundColor: currentTheme.backgroundColor,
+    backgroundColor: currentTheme.inputBackground,
     marginTop: 13,
-    marginHorizontal: 3,
+    marginHorizontal: 15,
     height: 43,
-    marginBottom:1,
+    marginBottom:-10,
     color: currentTheme.textColor,
   },
   noPostsText : {

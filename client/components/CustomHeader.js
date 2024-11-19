@@ -121,6 +121,6 @@ const styles = StyleSheet.create({
     marginRight: 13,
   },
   menuButton : {
-    marginLeft: 20,
+    marginLeft: 'auto',
   }
 });
