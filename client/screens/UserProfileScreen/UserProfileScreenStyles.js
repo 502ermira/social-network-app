@@ -20,7 +20,7 @@ export const getUserProfileScreenStyles = (currentTheme) => StyleSheet.create({
   profileHeader: {
     flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: 7,
+    marginBottom: 1,
   },
   profileImage: {
     width: width,
@@ -32,7 +32,7 @@ export const getUserProfileScreenStyles = (currentTheme) => StyleSheet.create({
     borderTopRightRadius: 26,
     overflow: 'hidden',
     backgroundColor: currentTheme.inputBackground,
-    marginTop: -30,
+    marginTop: -28,
     marginHorizontal:-2
   },
   profileInfoInner: {
@@ -44,26 +44,26 @@ export const getUserProfileScreenStyles = (currentTheme) => StyleSheet.create({
     paddingTop:17,
   },
   fullname: {
-    fontSize: 19,
-    fontWeight: '500',
+    fontSize: 18,
+    fontWeight: '600',
     color: currentTheme.textColor,
   },
   username: {
-    fontSize: 15.5,
+    fontSize: 14,
     fontWeight: '400',
     color: currentTheme.tertiaryTextColor,
     paddingTop:2,
   },
   bio : {
     paddingHorizontal: 21,
-    marginTop: 6,
+    marginTop: 10,
     color: currentTheme.secondaryTextColor,
-    marginBottom:-5,
+    marginBottom:-7,
   },
   
   followInfo: {
     flexDirection: 'row',
-    marginTop: 20,
+    marginTop: 17,
     alignSelf:'center',
     borderRadius:10,
     justifyContent:'space-between',
@@ -146,11 +146,16 @@ roundedProfileImage: {
     padding: 4,
     justifyContent: 'flex-start',
   },
+  buttonContainer: {
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
   followButton: {
-    backgroundColor: '#7049f6',
-    paddingVertical: 12,
+    paddingVertical: 10.5,
     paddingHorizontal: 30,
     borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   followButtonText: {
     color: 'white',
@@ -194,6 +199,5 @@ roundedProfileImage: {
     fontSize: 16,
     color:currentTheme.textColor,
     fontWeight: '500'
-
   },
 });

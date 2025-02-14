@@ -6,6 +6,7 @@ import { UserContext } from '../../contexts/UserContext';
 import { ThemeContext } from '@/contexts/ThemeContext';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { getUserProfileScreenStyles } from './UserProfileScreenStyles';
+import { LinearGradient } from 'expo-linear-gradient';
 import CustomHeader from '@/components/CustomHeader';
 import Loader from '@/components/Loader';
 import { API_ENDPOINTS } from '@/config/apiConfig';
@@ -23,6 +24,8 @@ export default function UserProfileScreen() {
   const [reposts, setReposts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -34,8 +37,8 @@ export default function UserProfileScreen() {
   ]);
 
   const screenWidth = Dimensions.get('window').width;
-  const numColumns = screenWidth > 600 ? 3 : 3;
-  const imageSize = screenWidth / numColumns - 1;
+  const numColumns = screenWidth > 600 ? 3 : 2;
+  const imageSize = screenWidth / numColumns - 10;
 
   const toggleMenu = () => {
     setIsMenuOpen((prevState) => !prevState);
@@ -78,6 +81,9 @@ export default function UserProfileScreen() {
 
         const followResponse = await fetch(API_ENDPOINTS.FOLLOWERS_FOLLOWING(username));
         const followData = await followResponse.json();
+
+        setFollowers(followData.followers);
+        setFollowing(followData.following);
 
         setFollowerCount(data.isBlocked ? 0 : followData.followers.length);
         setFollowingCount(data.isBlocked ? 0 : followData.following.length);
@@ -272,30 +278,87 @@ export default function UserProfileScreen() {
       <View style={styles.container}>
         <View style={styles.profileHeader}>
           <Image source={{ uri: profileData.profilePicture }} style={styles.profileImage} />
-          <View style={styles.profileInfo}>
+          <View style={styles.profileInfoContainer}>
+          <View style={styles.profileInfoInner}>
+            
             <Text style={styles.fullname}>{profileData.fullname}</Text>
-            <View style={styles.followInfo}>
-              <TouchableOpacity onPress={navigateToFollowers}>
-                <Text style={styles.followers}>{followerCount} Followers</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={navigateToFollowing}>
-                <Text style={styles.following}>{followingCount} Following</Text>
-              </TouchableOpacity>
-            </View>
+             <TouchableOpacity 
+                style={styles.buttonContainer} 
+                onPress={isBlocked ? handleBlockToggle : handleFollowToggle}
+             >
+                  <LinearGradient
+                    colors={['#FFA500', '#FF4500']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.followButton}
+                  >
+                    <Text style={styles.followButtonText}>
+                     {isBlocked ? 'Unblock' : isFollowing ? 'Following' : 'Follow'}
+                   </Text>
+                  </LinearGradient>
+
+             </TouchableOpacity>
+
           </View>
         </View>
+        </View>
+
+        <View style={styles.followInfo}>
+                <TouchableOpacity>
+                  <View style={styles.postsContainer}>
+                    <View style={styles.profileImagesContainer}>
+                      {posts.slice(0, 3).map((post, index) => (
+                        <Image
+                          key={index}
+                          source={{ uri: post.image.image }}
+                          style={styles.roundedProfileImage} 
+                        />
+                      ))}
+                    </View>
+                    <Text style={styles.postsText}>
+                      <Text style={styles.count}>{profileData.postCount}</Text>
+                      &nbsp;posts
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={navigateToFollowers}>
+                  <View style={styles.followersContainer}>
+                    <View style={styles.profileImagesContainer}>
+                      {followers.slice(0, 3).map((follower, index) => (
+                        <Image
+                          key={index}
+                          source={{ uri: follower.followerId.profilePicture }}
+                          style={styles.roundedProfileImage}
+                        />
+                      ))}
+                    </View>
+                    <Text style={styles.followersText}>
+                      <Text style={styles.count}>{followerCount}</Text>
+                      &nbsp;followers
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={navigateToFollowing}>
+                  <View style={styles.followingContainer}>
+                    <View style={styles.profileImagesContainer}>
+                      {following.slice(0, 3).map((user, index) => (
+                        <Image
+                          key={index}
+                          source={{ uri: user.followingId.profilePicture }}
+                          style={styles.roundedProfileImage}
+                        />
+                      ))}
+                    </View>
+                    <Text style={styles.followingText}>
+                      <Text style={styles.count}>{followingCount}</Text>
+                      &nbsp;following
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+            </View>
         {profileData.bio ? (
          <Text style={styles.bio}>{profileData.bio}</Text>
           ) : null}
-
-        <TouchableOpacity 
-          style={styles.followButton} 
-          onPress={isBlocked ? handleBlockToggle : handleFollowToggle}
-        >
-          <Text style={styles.followButtonText}>
-            {isBlocked ? 'Unblock' : isFollowing ? 'Following' : 'Follow'}
-          </Text>
-        </TouchableOpacity>
 
         <TabView
           navigationState={{ index, routes }}

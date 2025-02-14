@@ -4,6 +4,7 @@ import { UserContext } from '../../contexts/UserContext.js';
 import { ThemeContext } from '@/contexts/ThemeContext.js';
 import Ionicons from 'react-native-vector-icons/Ionicons'; 
 import CustomHeader from '@/components/CustomHeader.js';
+import { LinearGradient } from 'expo-linear-gradient';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Loader from '@/components/Loader.js';
 import { getUserProfileScreenStyles } from '../UserProfileScreen/UserProfileScreenStyles.js';
@@ -257,10 +258,17 @@ const LikesRoute = () => (
               </View> 
         
               <TouchableOpacity
-                style={styles.followButton}
+                style={styles.buttonContainer}
                 onPress={() => navigation.navigate('EditProfile', { updateUserData: setUserData, onRefreshProfile: handleRefreshProfile })}
               >
-                <Text style={styles.followButtonText}>Edit Profile</Text>
+                  <LinearGradient
+                    colors={['#FFA500', '#FF4500']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.followButton}
+                  >
+                    <Text style={styles.followButtonText}>Edit Profile</Text>
+                  </LinearGradient>
               </TouchableOpacity>
             </View>
         
@@ -340,7 +348,7 @@ const LikesRoute = () => (
             renderTabBar={props => (
               <TabBar
               {...props}
-              indicatorStyle={{ backgroundColor: currentTheme.secondaryTextColor , marginBottom: 1.5, height:1 }}
+              indicatorStyle={{ backgroundColor: currentTheme.secondaryTextColor , marginBottom: 1.5, height:1.2 }}
               style={styles.tabBar}
               renderIcon={({ route, focused, color }) => {
                 let iconSize = 19;

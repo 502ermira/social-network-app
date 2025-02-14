@@ -35,62 +35,70 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-  exports.getUserProfileByUsername = async (req, res) => {
-    const { username } = req.params;
-    const loggedInUserId = req.userId;
-  
-    try {
-      const user = await User.findOne({ username })
-        .select('fullname username profilePicture posts bio blockedUsers')
-        .populate({
-          path: 'posts',
-          populate: {
-            path: 'image',
-            model: 'Image',
-            select: 'image',
-          },
-        });
-  
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-  
-      const loggedInUser = await User.findById(loggedInUserId).select('blockedUsers');
-      
-      const isBlocked = 
-        user.blockedUsers.includes(loggedInUserId) || 
-        loggedInUser.blockedUsers.includes(user._id);
-  
-      if (isBlocked) {
-        return res.json({
-          user: {
-            username: user.username,
-            fullname: user.fullname,
-            profilePicture: user.profilePicture,
-            bio: user.bio,
-          },
-          reposts: [],
-          isBlocked: true,
-        });
-      }
-  
-      const reposts = await Repost.find({ user: user._id })
-        .populate({
-          path: 'post',
-          populate: {
-            path: 'image',
-            model: 'Image',
-            select: 'image',
-          },
-        });
-  
-      res.json({ user, reposts, isBlocked });
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      res.status(500).json({ error: 'Failed to fetch user profile' });
+exports.getUserProfileByUsername = async (req, res) => {
+  const { username } = req.params;
+  const loggedInUserId = req.userId;
+
+  try {
+    const user = await User.findOne({ username })
+      .select('fullname username profilePicture posts bio blockedUsers')
+      .populate({
+        path: 'posts',
+        populate: {
+          path: 'image',
+          model: 'Image',
+          select: 'image',
+        },
+      });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-  };
-  
+
+    const loggedInUser = await User.findById(loggedInUserId).select('blockedUsers');
+    
+    const isBlocked = 
+      user.blockedUsers.includes(loggedInUserId) || 
+      loggedInUser.blockedUsers.includes(user._id);
+
+    if (isBlocked) {
+      return res.json({
+        user: {
+          username: user.username,
+          fullname: user.fullname,
+          profilePicture: user.profilePicture,
+          bio: user.bio,
+          postCount: 0,
+        },
+        reposts: [],
+        isBlocked: true,
+      });
+    }
+
+    const reposts = await Repost.find({ user: user._id })
+      .populate({
+        path: 'post',
+        populate: {
+          path: 'image',
+          model: 'Image',
+          select: 'image',
+        },
+      });
+
+    res.json({ 
+      user: {
+        ...user.toObject(),
+        postCount: user.posts.length,
+      },
+      reposts, 
+      isBlocked 
+    });
+
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ error: 'Failed to fetch user profile' });
+  }
+};
 
   exports.updateProfile = async (req, res) => {
     const { fullname, profilePicture, username, email, bio } = req.body;

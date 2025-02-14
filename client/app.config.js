@@ -1,6 +1,10 @@
 import 'dotenv/config';
 
 export default {
+    "plugins": [
+      "expo-font",
+      "expo-router"
+    ],
   expo: {
     name: "client",
     slug: "client",
@@ -11,3 +15,4 @@ export default {
     },
   },
 };
+

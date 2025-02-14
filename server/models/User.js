@@ -36,7 +36,6 @@ const userSchema = new mongoose.Schema({
     type: String, 
     maxlength: 150
   },
-  favorites: [{ type: String }],
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post', default: [] }],
   theme: { type: String, default: 'dark' },
   blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
