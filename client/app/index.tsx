@@ -51,7 +51,7 @@ function AppNavigator() {
 
     return (
         <>
-          {shouldShowNavbar() && <Navbar isLoggedIn={isLoggedIn} />}
+       {shouldShowNavbar() && <Navbar isLoggedIn={isLoggedIn} currentRoute={currentRoute} />}
 
             <Stack.Navigator initialRouteName="LandingScreen">
                 <Stack.Screen name="Login" component={Screens.LoginScreen} options={{ headerShown: false }} />

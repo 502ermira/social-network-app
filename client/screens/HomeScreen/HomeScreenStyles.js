@@ -8,7 +8,6 @@ export const getHomeScreenStyles = (currentTheme) => StyleSheet.create({
     backgroundColor: currentTheme.backgroundColor,
     padding: 12,
     paddingTop: 50,
-    paddingBottom: 50,
   },
   postContainer: {
     backgroundColor: currentTheme.inputBackground,

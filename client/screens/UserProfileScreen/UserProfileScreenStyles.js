@@ -7,7 +7,6 @@ export const getUserProfileScreenStyles = (currentTheme) => StyleSheet.create({
     flex: 1,
     backgroundColor: currentTheme.inputBackground,
     paddingTop: 0,
-    paddingBottom: 75,
   },
   scrollContainer: {
     flexGrow: 1,
